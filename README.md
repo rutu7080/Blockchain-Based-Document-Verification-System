@@ -7,7 +7,22 @@ Try running some of the following tasks:
 ```shell
 npx hardhat help
 npx hardhat test
-REPORT_GAS=true npx hardhat test
-npx hardhat node
-npx hardhat ignition deploy ./ignition/modules/Lock.js
 ```
+Start hardhat node
+```shell
+npx hardhat node
+```
+In another Terminal Deploy Contract
+```shell
+npx hardhat clean
+npx hardhat compile
+npx hardhat run scripts/deploy.js --network localhost
+```
+In another Terminal Start frontend App
+```shell
+cd frontend
+cd src
+npm start
+```
+
+
