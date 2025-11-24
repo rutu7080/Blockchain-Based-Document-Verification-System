@@ -1,0 +1,19 @@
+{
+  "name": "blockchain-doc-verifier",
+  "version": "1.0.0",
+  "description": "A project to issue and revoke documents on blockchain",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx hardhat test",
+    "compile": "npx hardhat compile",
+    "clean": "npx hardhat clean"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "@openzeppelin/contracts": "^5.4.0",
+    "hardhat": "^2.26.3"
+  }
+}
