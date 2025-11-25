@@ -3,8 +3,7 @@ import { ethers } from "ethers";
 import DocRegistry from "./artifacts/contracts/DocRegistry.sol/DocRegistry.json";
 import "./App.css";
 
-// UPDATE THIS with your NEW deployed contract address
-const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; // REPLACE WITH YOUR NEW ADDRESS
+const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 const localProviderUrl = "http://127.0.0.1:8545";
 
 function App() {
@@ -28,7 +27,6 @@ function App() {
       setContract(c);
       signer.getAddress().then(async (addr) => {
         setAccount(addr);
-        // Check user's roles
         try {
           if (c.isAdmin && c.isIssuer) {
             const isAdmin = await c.isAdmin(addr);
@@ -262,21 +260,40 @@ function App() {
 
   if (step === "selectRole") {
     return (
-      <div style={{ textAlign: "center", marginTop: 50, padding: "20px" }}>
-        <h1>🔐 Blockchain Document Verification System</h1>
-        <p style={{ color: "#666", marginBottom: "30px" }}>Secure, immutable document verification on the blockchain</p>
-        
-        <h3>Select your role:</h3>
-        <div style={{ display: "flex", justifyContent: "center", gap: "20px", flexWrap: "wrap" }}>
-          <button onClick={() => { setRole("issuer"); setStep("connect"); }} style={{ margin: "10px", padding: "15px 25px", fontSize: "16px", backgroundColor: "#4CAF50", color: "white", border: "none", borderRadius: "8px", cursor: "pointer", minWidth: "120px" }}>
-            📝 Issuer<div style={{ fontSize: "12px", marginTop: "5px" }}>Issue & manage documents</div>
-          </button>
-          <button onClick={() => { setRole("user"); setStep("connect"); }} style={{ margin: "10px", padding: "15px 25px", fontSize: "16px", backgroundColor: "#2196F3", color: "white", border: "none", borderRadius: "8px", cursor: "pointer", minWidth: "120px" }}>
-            👤 User<div style={{ fontSize: "12px", marginTop: "5px" }}>View document details</div>
-          </button>
-          <button onClick={() => { setRole("verifier"); setStep("connect"); }} style={{ margin: "10px", padding: "15px 25px", fontSize: "16px", backgroundColor: "#FF9800", color: "white", border: "none", borderRadius: "8px", cursor: "pointer", minWidth: "120px" }}>
-            🔍 Verifier<div style={{ fontSize: "12px", marginTop: "5px" }}>Verify document authenticity</div>
-          </button>
+      <div className="App">
+        <div className="glass-container" style={{ textAlign: "center" }}>
+          <h1 className="role-selection-title">🔐 Blockchain Document Verification System</h1>
+          <p className="role-selection-subtitle" style={{ color: "#666", marginBottom: "30px", fontSize: "1.1rem" }}>
+            Secure, immutable document verification on the blockchain
+          </p>
+          
+          <h3 className="role-selection-header">Select your role:</h3>
+          <div className="role-cards-container" style={{ display: "flex", justifyContent: "center", gap: "20px", flexWrap: "wrap", marginTop: "30px" }}>
+            <button 
+              className="role-button hover-lift"
+              onClick={() => { setRole("issuer"); setStep("connect"); }} 
+              style={{ margin: "10px", padding: "20px 30px", fontSize: "16px", backgroundColor: "#4CAF50", color: "white", borderRadius: "12px", minWidth: "160px" }}>
+              <div className="role-button-icon" style={{ fontSize: "2rem", marginBottom: "8px" }}>📝</div>
+              <div style={{ fontWeight: "bold" }}>Issuer</div>
+              <div style={{ fontSize: "12px", marginTop: "5px", opacity: 0.9 }}>Issue & manage documents</div>
+            </button>
+            <button 
+              className="role-button hover-lift"
+              onClick={() => { setRole("user"); setStep("connect"); }} 
+              style={{ margin: "10px", padding: "20px 30px", fontSize: "16px", backgroundColor: "#2196F3", color: "white", borderRadius: "12px", minWidth: "160px" }}>
+              <div className="role-button-icon" style={{ fontSize: "2rem", marginBottom: "8px" }}>👤</div>
+              <div style={{ fontWeight: "bold" }}>User</div>
+              <div style={{ fontSize: "12px", marginTop: "5px", opacity: 0.9 }}>View document details</div>
+            </button>
+            <button 
+              className="role-button hover-lift"
+              onClick={() => { setRole("verifier"); setStep("connect"); }} 
+              style={{ margin: "10px", padding: "20px 30px", fontSize: "16px", backgroundColor: "#FF9800", color: "white", borderRadius: "12px", minWidth: "160px" }}>
+              <div className="role-button-icon" style={{ fontSize: "2rem", marginBottom: "8px" }}>🔍</div>
+              <div style={{ fontWeight: "bold" }}>Verifier</div>
+              <div style={{ fontSize: "12px", marginTop: "5px", opacity: 0.9 }}>Verify document authenticity</div>
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -284,96 +301,212 @@ function App() {
 
   if (step === "connect") {
     return (
-      <div style={{ textAlign: "center", marginTop: 50, padding: "20px" }}>
-        <h2>Connect Wallet (Role: {role})</h2>
-        {account ? (
-          <div>
-            <p style={{ color: "#4CAF50" }}>✅ Connected as: <code>{account}</code></p>
-            {roleStatus && (
-              <div style={{ backgroundColor: "#f0f8ff", padding: "10px", borderRadius: "5px", margin: "10px 0" }}>
-                <p><strong>Your Roles:</strong> Admin: {roleStatus.isAdmin ? "✅" : "❌"} | Issuer: {roleStatus.isIssuer ? "✅" : "❌"}</p>
-              </div>
-            )}
+      <div className="App">
+        <div className="glass-container" style={{ textAlign: "center" }}>
+          <h2>Connect Wallet</h2>
+          <div className="status-badge" style={{ 
+            backgroundColor: role === "issuer" ? "#4CAF50" : role === "user" ? "#2196F3" : "#FF9800", 
+            color: "white", 
+            padding: "8px 16px", 
+            borderRadius: "20px", 
+            display: "inline-block",
+            marginBottom: "20px"
+          }}>
+            Role: {role}
           </div>
-        ) : (
-          <button onClick={connectWallet} style={{ padding: "12px 24px", fontSize: "16px", margin: "20px", backgroundColor: "#FF6B35", color: "white", border: "none", borderRadius: "8px", cursor: "pointer" }}>
-            🦊 Connect MetaMask Wallet
+          
+          {account ? (
+            <div className="info-card">
+              <p style={{ color: "#4CAF50", fontWeight: "600", fontSize: "1.1rem" }}>
+                ✅ Connected as:
+              </p>
+              <code className="blockchain-hash">{account}</code>
+              {roleStatus && (
+                <div className="role-status">
+                  <span>Admin: {roleStatus.isAdmin ? "✅" : "❌"}</span>
+                  <span>Issuer: {roleStatus.isIssuer ? "✅" : "❌"}</span>
+                </div>
+              )}
+            </div>
+          ) : (
+            <button 
+              className="hover-lift"
+              onClick={connectWallet} 
+              style={{ padding: "15px 30px", fontSize: "18px", margin: "20px", backgroundColor: "#FF6B35", color: "white", borderRadius: "12px" }}>
+              🦊 Connect MetaMask Wallet
+            </button>
+          )}
+          <br />
+          <button 
+            onClick={() => setStep("selectRole")} 
+            style={{ padding: "10px 20px", fontSize: "14px", backgroundColor: "#607D8B", color: "white", borderRadius: "8px", marginTop: "20px" }}>
+            ← Back to Role Selection
           </button>
-        )}
-        <br />
-        <button onClick={() => setStep("selectRole")} style={{ padding: "8px 16px", fontSize: "14px", backgroundColor: "#607D8B", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}>
-          ← Back to Role Selection
-        </button>
+        </div>
       </div>
     );
   }
 
   if (step === "options") {
     return (
-      <div style={{ textAlign: "center", marginTop: 20, padding: "20px", maxWidth: "800px", margin: "0 auto" }}>
-        <h2>🔐 Document Verification System</h2>
-        <p><strong>Contract:</strong> <code>{contractAddress}</code></p>
-        <p><strong>Account:</strong> <code>{account ? `${account.slice(0,8)}...${account.slice(-6)}` : "Not connected"}</code></p>
-        <p><strong>Role:</strong> <span style={{ backgroundColor: role === "issuer" ? "#4CAF50" : role === "user" ? "#2196F3" : "#FF9800", color: "white", padding: "4px 8px", borderRadius: "4px" }}>{role}</span></p>
-
-        <div style={{ backgroundColor: "#fafafa", padding: "20px", borderRadius: "10px", margin: "20px 0" }}>
-          <h3>📁 File Selection</h3>
-          <input type="file" onChange={handleFileChange} disabled={isLoading} style={{ margin: "10px", padding: "8px", border: "2px dashed #ccc", borderRadius: "5px", width: "300px" }} />
-          <p style={{ wordBreak: "break-all", fontSize: "12px", color: "#666" }}>
-            <strong>Document Hash:</strong><br/>{fileHash32 ? `${fileHash32.slice(0,16)}...${fileHash32.slice(-16)}` : "No file selected"}
-          </p>
-        </div>
-
-        {error && (
-          <div style={{ color: error.includes("✅") ? "#2e7d32" : "#d32f2f", backgroundColor: error.includes("✅") ? "#e8f5e8" : "#ffebee", padding: "15px", borderRadius: "8px", margin: "10px 0", whiteSpace: "pre-line", textAlign: "left" }}>
-            <strong>{error.includes("✅") ? "✅ Success:" : "❌ Error:"}</strong><br/>{error}
+      <div className="App">
+        <div className="glass-container">
+          <h2 style={{ textAlign: "center" }}>🔐 Document Verification System</h2>
+          
+          <div className="info-card">
+            <p><strong>Contract:</strong> <code>{contractAddress}</code></p>
+            <p><strong>Account:</strong> <code>{account ? `${account.slice(0,8)}...${account.slice(-6)}` : "Not connected"}</code></p>
+            <p>
+              <strong>Role:</strong>{" "}
+              <span className="status-badge" style={{ 
+                backgroundColor: role === "issuer" ? "#4CAF50" : role === "user" ? "#2196F3" : "#FF9800", 
+                color: "white"
+              }}>
+                {role}
+              </span>
+            </p>
           </div>
-        )}
 
-        {isLoading && <div style={{ color: "#1976d2", margin: "15px 0" }}><p>⏳ Processing transaction...</p></div>}
-
-        {role === "issuer" && (
-          <div style={{ backgroundColor: "#f3e5f5", padding: "15px", borderRadius: "8px", margin: "15px 0" }}>
-            <h4>🔑 Role Check</h4>
-            <button onClick={checkRoles} disabled={isLoading} style={{ padding: "8px 12px", backgroundColor: "#607D8B", color: "white", border: "none", borderRadius: "5px", cursor: "pointer" }}>
-              🔍 Check My Roles & Contract Status
-            </button>
-            <p style={{ fontSize: "12px", color: "#666", marginTop: "8px" }}>Check your permissions and contract version</p>
-          </div>
-        )}
-
-        <div style={{ backgroundColor: "#ffffff", padding: "20px", borderRadius: "10px", margin: "20px 0", boxShadow: "0 2px 4px rgba(0,0,0,0.1)" }}>
-          <h4>📋 Actions</h4>
-          <div style={{ display: "flex", justifyContent: "center", gap: "10px", flexWrap: "wrap" }}>
-            {role === "issuer" && (
-              <>
-                <button onClick={issueDocument} disabled={isLoading || !file} style={{ margin: "5px", padding: "12px 18px", backgroundColor: "#4CAF50", color: "white", border: "none", borderRadius: "6px", cursor: "pointer", fontSize: "14px" }}>📝 Issue Document</button>
-                <button onClick={revokeDocument} disabled={isLoading || !file} style={{ margin: "5px", padding: "12px 18px", backgroundColor: "#f44336", color: "white", border: "none", borderRadius: "6px", cursor: "pointer", fontSize: "14px" }}>❌ Revoke Document</button>
-                <button onClick={viewDocument} disabled={isLoading || !file} style={{ margin: "5px", padding: "12px 18px", backgroundColor: "#2196F3", color: "white", border: "none", borderRadius: "6px", cursor: "pointer", fontSize: "14px" }}>👁️ View Document</button>
-              </>
-            )}
-            {role === "user" && (
-              <button onClick={viewDocument} disabled={isLoading || !file} style={{ margin: "5px", padding: "12px 18px", backgroundColor: "#2196F3", color: "white", border: "none", borderRadius: "6px", cursor: "pointer", fontSize: "14px" }}>👁️ View Document Details</button>
-            )}
-            {role === "verifier" && (
-              <button onClick={verifyFile} disabled={isLoading || !file} style={{ margin: "5px", padding: "12px 18px", backgroundColor: "#FF9800", color: "white", border: "none", borderRadius: "6px", cursor: "pointer", fontSize: "14px" }}>🔍 Verify Document</button>
-            )}
-          </div>
-        </div>
-
-        <button onClick={() => { setAccount(null); setSigner(null); setFile(null); setFileHash32(""); setError(null); setIsLoading(false); setRole(null); setStep("selectRole"); setFetchedDoc(null); setRoleStatus(null); }} style={{ padding: "10px 20px", backgroundColor: "#607D8B", color: "white", border: "none", borderRadius: "6px", cursor: "pointer", margin: "20px 0" }}>🚪 Logout</button>
-
-        {fetchedDoc && (
-          <div style={{ marginTop: 30, border: "2px solid #ddd", padding: 20, borderRadius: "12px", backgroundColor: "#f9f9f9", textAlign: "left" }}>
-            <h3 style={{ textAlign: "center" }}>📄 Document Details</h3>
-            <div style={{ display: "grid", gap: "10px" }}>
-              <p><strong>🏢 Issuer:</strong> <code>{fetchedDoc.issuer}</code></p>
-              <p><strong>📎 File Name:</strong> {fetchedDoc.ipfsUri}</p>
-              <p><strong>📅 Issued At:</strong> {fetchedDoc.issuedAt}</p>
-              <p><strong>📊 Status:</strong> <span style={{ backgroundColor: fetchedDoc.revoked ? "#f44336" : "#4CAF50", color: "white", padding: "4px 8px", borderRadius: "4px", fontSize: "14px" }}>{fetchedDoc.revoked ? "❌ Revoked" : "✅ Valid"}</span></p>
+          <div className="info-card">
+            <h3 style={{ textAlign: "center" }}>📁 File Selection</h3>
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: "15px" }}>
+              <div className="file-upload-wrapper">
+                <label className={`file-upload-label ${file ? 'has-file' : ''}`} htmlFor="file-input">
+                  <span style={{ fontSize: "2rem", marginRight: "10px" }}>
+                    {file ? "📄" : "📁"}
+                  </span>
+                  <span>{file ? file.name : "Choose File"}</span>
+                </label>
+                <input 
+                  id="file-input"
+                  type="file" 
+                  onChange={handleFileChange} 
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+            <div className="hash-display">
+              <strong>Document Hash:</strong><br/>
+              {fileHash32 ? `${fileHash32.slice(0,16)}...${fileHash32.slice(-16)}` : "No file selected"}
             </div>
           </div>
-        )}
+
+          {error && (
+            <div className={`message-box ${error.includes("✅") ? "success" : "error"}`}>
+              <strong>{error.includes("✅") ? "✅ Success:" : "❌ Error:"}</strong><br/>{error}
+            </div>
+          )}
+
+          {isLoading && (
+            <div className="loading-container transaction-pending">
+              <div className="spinner"></div>
+              <p style={{ color: "#1976d2", fontWeight: "600" }}>⏳ Processing transaction...</p>
+            </div>
+          )}
+
+          {role === "issuer" && (
+            <div className="info-card" style={{ backgroundColor: "#f3e5f5" }}>
+              <h4 style={{ textAlign: "center" }}>🔑 Role Check</h4>
+              <div style={{ textAlign: "center" }}>
+                <button 
+                  className="hover-lift"
+                  onClick={checkRoles} 
+                  disabled={isLoading} 
+                  style={{ padding: "10px 20px", backgroundColor: "#607D8B", color: "white", borderRadius: "8px" }}>
+                  🔍 Check My Roles & Contract Status
+                </button>
+              </div>
+              <p style={{ fontSize: "12px", color: "#666", marginTop: "10px", textAlign: "center" }}>
+                Check your permissions and contract version
+              </p>
+            </div>
+          )}
+
+          <div className="info-card">
+            <h4 style={{ textAlign: "center" }}>📋 Actions</h4>
+            <div style={{ display: "flex", justifyContent: "center", gap: "12px", flexWrap: "wrap", marginTop: "15px" }}>
+              {role === "issuer" && (
+                <>
+                  <button 
+                    className="hover-lift"
+                    onClick={issueDocument} 
+                    disabled={isLoading || !file} 
+                    style={{ padding: "12px 24px", backgroundColor: "#4CAF50", color: "white", borderRadius: "10px", fontSize: "15px", fontWeight: "600" }}>
+                    📝 Issue Document
+                  </button>
+                  <button 
+                    className="hover-lift"
+                    onClick={revokeDocument} 
+                    disabled={isLoading || !file} 
+                    style={{ padding: "12px 24px", backgroundColor: "#f44336", color: "white", borderRadius: "10px", fontSize: "15px", fontWeight: "600" }}>
+                    ❌ Revoke Document
+                  </button>
+                  <button 
+                    className="hover-lift"
+                    onClick={viewDocument} 
+                    disabled={isLoading || !file} 
+                    style={{ padding: "12px 24px", backgroundColor: "#2196F3", color: "white", borderRadius: "10px", fontSize: "15px", fontWeight: "600" }}>
+                    👁️ View Document
+                  </button>
+                </>
+              )}
+              {role === "user" && (
+                <button 
+                  className="hover-lift"
+                  onClick={viewDocument} 
+                  disabled={isLoading || !file} 
+                  style={{ padding: "12px 24px", backgroundColor: "#2196F3", color: "white", borderRadius: "10px", fontSize: "15px", fontWeight: "600" }}>
+                  👁️ View Document Details
+                </button>
+              )}
+              {role === "verifier" && (
+                <button 
+                  className="hover-lift"
+                  onClick={verifyFile} 
+                  disabled={isLoading || !file} 
+                  style={{ padding: "12px 24px", backgroundColor: "#FF9800", color: "white", borderRadius: "10px", fontSize: "15px", fontWeight: "600" }}>
+                  🔍 Verify Document
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div style={{ textAlign: "center" }}>
+            <button 
+              onClick={() => { 
+                setAccount(null); 
+                setSigner(null); 
+                setFile(null); 
+                setFileHash32(""); 
+                setError(null); 
+                setIsLoading(false); 
+                setRole(null); 
+                setStep("selectRole"); 
+                setFetchedDoc(null); 
+                setRoleStatus(null); 
+              }} 
+              style={{ padding: "12px 24px", backgroundColor: "#607D8B", color: "white", borderRadius: "10px", margin: "20px 0", fontWeight: "600" }}>
+              🚪 Logout
+            </button>
+          </div>
+
+          {fetchedDoc && (
+            <div className="document-details">
+              <h3 style={{ textAlign: "center", marginBottom: "20px" }}>📄 Document Details</h3>
+              <div style={{ display: "grid", gap: "12px" }}>
+                <p><strong>🏢 Issuer:</strong> <code>{fetchedDoc.issuer}</code></p>
+                <p><strong>📎 File Name:</strong> {fetchedDoc.ipfsUri}</p>
+                <p><strong>📅 Issued At:</strong> {fetchedDoc.issuedAt}</p>
+                <p>
+                  <strong>📊 Status:</strong>{" "}
+                  <span className={`status-badge ${fetchedDoc.revoked ? 'revoked' : 'valid'}`}>
+                    {fetchedDoc.revoked ? "❌ Revoked" : "✅ Valid"}
+                  </span>
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     );
   }
