@@ -7,6 +7,14 @@ const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 const localProviderUrl = "http://127.0.0.1:8545";
 
 function App() {
+
+  //const [file, setFile] = useState(null);
+  const [message, setMessage] = useState("");
+
+  const [issuedDocs, setIssuedDocs] = useState([]);
+  const [loadingDocs, setLoadingDocs] = useState(false);
+
+
   const [step, setStep] = useState("selectRole");
   const [role, setRole] = useState(null);
   const [account, setAccount] = useState(null);
@@ -25,6 +33,7 @@ function App() {
     if (signer) {
       const c = new ethers.Contract(contractAddress, DocRegistry.abi, signer);
       setContract(c);
+      
       signer.getAddress().then(async (addr) => {
         setAccount(addr);
         try {
@@ -49,6 +58,55 @@ function App() {
       setRoleStatus(null);
     }
   }, [signer]);
+  useEffect(() => {
+    if (role === "user" && step === "options" && contract) {
+      fetchIssuedDocuments();
+    }
+  }, [role, step, contract]);
+
+
+  async function fetchIssuedDocuments() {
+      if (!contract) return;
+
+      setLoadingDocs(true);
+      setError(null);
+
+      try {
+        const hashes = await contract.getAllIssuedDocuments();
+
+        const docs = await Promise.all(
+          hashes.map(async (hash) => {
+            const result = await contract.getDocument(hash);
+
+            // ethers v6 returns array-like result
+            // After contract update, order is: issuer, fileName, ipfsUri, issuedAt, revoked
+            const issuer   = result[0];
+            const fileName = result[1];  // ✅ Now the actual fileName
+            const ipfsUri  = result[2];  // ✅ Now the actual IPFS CID
+            const issuedAt = result[3];
+            const revoked  = result[4];
+
+            return {
+              hash,
+              issuer,
+              fileName,
+              cid: ipfsUri,  // Use ipfsUri as the CID
+              issuedAt: new Date(Number(issuedAt) * 1000).toLocaleString(),
+              revoked,
+            };
+          })
+        );
+
+        setIssuedDocs(docs);
+      } catch (err) {
+        console.error("Failed to fetch issued documents:", err);
+        setError("Failed to load issued documents");
+      } finally {
+        setLoadingDocs(false);
+      }
+    }
+
+
 
   async function switchToHardhatNetwork() {
     if (!window.ethereum) return;
@@ -148,13 +206,27 @@ function App() {
     }
     setIsLoading(true);
     setError(null);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch("http://localhost:5000/upload", {
+      method: "POST",
+      body: formData,
+    });
+    const data = await res.json();
     try {
       console.log("Issuing document:", fileHash32, file.name);
-      const tx = await contract.issueDocument(fileHash32, file.name);
+      const tx = await contract.issueDocument(fileHash32, file.name ,data.cid);
       console.log("Transaction sent:", tx.hash);
       const receipt = await tx.wait();
       console.log("Transaction confirmed in block:", receipt.blockNumber);
-      
+      if (data.error) alert(data.error);
+      else if (data.cid) {
+        const link1 = "https://ipfs.io/ipfs/" + data.cid;
+        setMessage(link1);
+    } else {
+      console.warn("No CID returned from backend");
+    }
       alert(`✅ Document Issued Successfully!\n\nFile: ${file.name}\nHash: ${fileHash32}\nTransaction: ${tx.hash}\nBlock: ${receipt.blockNumber}`);
     } catch (err) {
       console.error("Issue failed:", err);
@@ -197,7 +269,8 @@ function App() {
     setFetchedDoc(null);
     
     try {
-      const [issuer, ipfsUri, issuedAt, revoked] = await contract.getDocument(fileHash32);
+      // After contract update: issuer, fileName, ipfsUri, issuedAt, revoked
+      const [issuer, fileName, ipfsUri, issuedAt, revoked] = await contract.getDocument(fileHash32);
       const issuedAtNumber = Number(issuedAt);
       
       if (issuer === "0x0000000000000000000000000000000000000000") {
@@ -207,6 +280,7 @@ function App() {
       
       setFetchedDoc({
         issuer,
+        fileName,
         ipfsUri,
         issuedAt: issuedAtNumber === 0 ? "Unknown" : new Date(issuedAtNumber * 1000).toLocaleString(),
         revoked,
@@ -237,9 +311,10 @@ function App() {
       console.log("Verifying hash:", hash32);
 
       const readOnlyContract = new ethers.Contract(contractAddress, DocRegistry.abi, provider);
-      const [issuer, ipfsUri, issuedAt, revoked] = await readOnlyContract.getDocument(hash32);
+      // After contract update: issuer, fileName, ipfsUri, issuedAt, revoked
+      const [issuer, fileName, ipfsUri, issuedAt, revoked] = await readOnlyContract.getDocument(hash32);
       
-      console.log("Verification result:", { issuer, ipfsUri, issuedAt: issuedAt.toString(), revoked });
+      console.log("Verification result:", { issuer, fileName, ipfsUri, issuedAt: issuedAt.toString(), revoked });
 
       if (issuer === "0x0000000000000000000000000000000000000000") {
         alert(`❌ DOCUMENT NOT FOUND\n\nFile: ${file.name}\nHash: ${hash32}\n\nThis document was not issued or doesn't exist in the blockchain.`);
@@ -248,7 +323,7 @@ function App() {
         const issuedDate = issuedAtNumber === 0 ? "Unknown" : new Date(issuedAtNumber * 1000).toLocaleString();
         const status = revoked ? "❌ REVOKED" : "✅ VALID";
         
-        alert(`✅ DOCUMENT VERIFIED!\n\nFile: ${file.name}\nStatus: ${status}\nIssuer: ${issuer}\nOriginal Name: ${ipfsUri}\nIssued: ${issuedDate}\nHash: ${hash32}`);
+        alert(`✅ DOCUMENT VERIFIED!\n\nFile: ${file.name}\nStatus: ${status}\nIssuer: ${issuer}\nOriginal Name: ${fileName}\nIPFS CID: ${ipfsUri}\nIssued: ${issuedDate}\nHash: ${hash32}`);
       }
     } catch (err) {
       console.error("Verify failed:", err);
@@ -367,29 +442,36 @@ function App() {
             </p>
           </div>
 
-          <div className="info-card">
-            <h3 style={{ textAlign: "center" }}>📁 File Selection</h3>
-            <div style={{ display: "flex", justifyContent: "center", marginBottom: "15px" }}>
-              <div className="file-upload-wrapper">
-                <label className={`file-upload-label ${file ? 'has-file' : ''}`} htmlFor="file-input">
-                  <span style={{ fontSize: "2rem", marginRight: "10px" }}>
-                    {file ? "📄" : "📁"}
-                  </span>
-                  <span>{file ? file.name : "Choose File"}</span>
-                </label>
-                <input 
-                  id="file-input"
-                  type="file" 
-                  onChange={handleFileChange} 
-                  disabled={isLoading}
-                />
+          {role !== "user" && (
+            <div className="issued-documents-section">
+              <h3 style={{ textAlign: "center"  }}>📁 File Selection</h3>
+
+              <div style={{ display: "flex", justifyContent: "center", marginBottom: "15px" }}>
+                <div className="file-upload-wrapper">
+                  <label className={`file-upload-label ${file ? 'has-file' : ''}`} htmlFor="file-input">
+                    <span style={{ fontSize: "2rem", marginRight: "10px" }}>
+                      {file ? "📄" : "📁"}
+                    </span>
+                    <span>{file ? file.name : "Choose File"}</span>
+                  </label>
+                  <input
+                    id="file-input"
+                    type="file"
+                    onChange={handleFileChange}
+                    disabled={isLoading}
+                  />
+                </div>
+              </div>
+
+              <div className="hash-display">
+                <strong>Document Hash:</strong><br/>
+                {fileHash32
+                  ? `${fileHash32.slice(0,16)}...${fileHash32.slice(-16)}`
+                  : "No file selected"}
               </div>
             </div>
-            <div className="hash-display">
-              <strong>Document Hash:</strong><br/>
-              {fileHash32 ? `${fileHash32.slice(0,16)}...${fileHash32.slice(-16)}` : "No file selected"}
-            </div>
-          </div>
+          )}
+
 
           {error && (
             <div className={`message-box ${error.includes("✅") ? "success" : "error"}`}>
@@ -422,54 +504,94 @@ function App() {
             </div>
           )}
 
-          <div className="info-card">
-            <h4 style={{ textAlign: "center" }}>📋 Actions</h4>
-            <div style={{ display: "flex", justifyContent: "center", gap: "12px", flexWrap: "wrap", marginTop: "15px" }}>
-              {role === "issuer" && (
-                <>
+          {role !== "user" && (
+            <div className="info-card">
+              <h4 style={{ textAlign: "center" }}>📋 Actions</h4>
+              <div style={{ display: "flex", justifyContent: "center", gap: "12px", flexWrap: "wrap", marginTop: "15px" }}>
+                {role === "issuer" && (
+                  <>
+                    <button 
+                      className="hover-lift"
+                      onClick={issueDocument} 
+                      disabled={isLoading || !file} 
+                      style={{ padding: "12px 24px", backgroundColor: "#4CAF50", color: "white", borderRadius: "10px", fontSize: "15px", fontWeight: "600" }}>
+                      📝 Issue Document
+                    </button>
+                    <button 
+                      className="hover-lift"
+                      onClick={revokeDocument} 
+                      disabled={isLoading || !file} 
+                      style={{ padding: "12px 24px", backgroundColor: "#f44336", color: "white", borderRadius: "10px", fontSize: "15px", fontWeight: "600" }}>
+                      ❌ Revoke Document
+                    </button>
+                    <button 
+                      className="hover-lift"
+                      onClick={viewDocument} 
+                      disabled={isLoading || !file} 
+                      style={{ padding: "12px 24px", backgroundColor: "#2196F3", color: "white", borderRadius: "10px", fontSize: "15px", fontWeight: "600" }}>
+                      👁️ View Document
+                    </button>
+                  </>
+                )}
+                {role === "verifier" && (
                   <button 
                     className="hover-lift"
-                    onClick={issueDocument} 
+                    onClick={verifyFile} 
                     disabled={isLoading || !file} 
-                    style={{ padding: "12px 24px", backgroundColor: "#4CAF50", color: "white", borderRadius: "10px", fontSize: "15px", fontWeight: "600" }}>
-                    📝 Issue Document
+                    style={{ padding: "12px 24px", backgroundColor: "#FF9800", color: "white", borderRadius: "10px", fontSize: "15px", fontWeight: "600" }}>
+                    🔍 Verify Document
                   </button>
-                  <button 
-                    className="hover-lift"
-                    onClick={revokeDocument} 
-                    disabled={isLoading || !file} 
-                    style={{ padding: "12px 24px", backgroundColor: "#f44336", color: "white", borderRadius: "10px", fontSize: "15px", fontWeight: "600" }}>
-                    ❌ Revoke Document
-                  </button>
-                  <button 
-                    className="hover-lift"
-                    onClick={viewDocument} 
-                    disabled={isLoading || !file} 
-                    style={{ padding: "12px 24px", backgroundColor: "#2196F3", color: "white", borderRadius: "10px", fontSize: "15px", fontWeight: "600" }}>
-                    👁️ View Document
-                  </button>
-                </>
-              )}
-              {role === "user" && (
-                <button 
-                  className="hover-lift"
-                  onClick={viewDocument} 
-                  disabled={isLoading || !file} 
-                  style={{ padding: "12px 24px", backgroundColor: "#2196F3", color: "white", borderRadius: "10px", fontSize: "15px", fontWeight: "600" }}>
-                  👁️ View Document Details
-                </button>
-              )}
-              {role === "verifier" && (
-                <button 
-                  className="hover-lift"
-                  onClick={verifyFile} 
-                  disabled={isLoading || !file} 
-                  style={{ padding: "12px 24px", backgroundColor: "#FF9800", color: "white", borderRadius: "10px", fontSize: "15px", fontWeight: "600" }}>
-                  🔍 Verify Document
-                </button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {role === "user" && (
+            <div className="issued-documents-section">
+              <h3 style={{ textAlign: "center" }}>📚 Issued Documents</h3>
+
+              {loadingDocs ? (
+                <p style={{ textAlign: "center" }}>⏳ Loading documents...</p>
+              ) : issuedDocs.length === 0 ? (
+                <p style={{ textAlign: "center", color: "#777" }}>
+                  No documents issued yet.
+                </p>
+              ) : (
+                <table style={{ width: "100%", marginTop: "15px", borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr>
+                      <th>File Name</th>
+                      <th>CID</th>
+                      <th>Status</th>
+                      <th>View</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {issuedDocs.map((doc, i) => (
+                      <tr key={i}>
+                        <td>{doc.fileName || 'Unknown'}</td>
+                        <td>
+                          {doc.cid ? `${doc.cid.slice(0, 10)}…${doc.cid.slice(-6)}` : 'N/A'}
+                        </td>
+                        <td>
+                          {doc.revoked ? "❌ Revoked" : "✅ Valid"}
+                        </td>
+                        <td>
+                          <a
+                            href={`https://ipfs.io/ipfs/${doc.cid}`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            🔗 Open
+                          </a>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               )}
             </div>
-          </div>
+          )}
 
           <div style={{ textAlign: "center" }}>
             <button 
@@ -495,7 +617,8 @@ function App() {
               <h3 style={{ textAlign: "center", marginBottom: "20px" }}>📄 Document Details</h3>
               <div style={{ display: "grid", gap: "12px" }}>
                 <p><strong>🏢 Issuer:</strong> <code>{fetchedDoc.issuer}</code></p>
-                <p><strong>📎 File Name:</strong> {fetchedDoc.ipfsUri}</p>
+                <p><strong>📎 File Name:</strong> {fetchedDoc.fileName}</p>
+                <p><strong>🔗 IPFS CID:</strong> <code>{fetchedDoc.ipfsUri}</code></p>
                 <p><strong>📅 Issued At:</strong> {fetchedDoc.issuedAt}</p>
                 <p>
                   <strong>📊 Status:</strong>{" "}
@@ -505,7 +628,7 @@ function App() {
                 </p>
               </div>
             </div>
-          )}
+          )} 
         </div>
       </div>
     );

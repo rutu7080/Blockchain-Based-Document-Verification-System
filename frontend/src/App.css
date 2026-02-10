@@ -84,20 +84,15 @@ body::after {
 /* ===========================
    GLASS MORPHISM CONTAINER
    =========================== */
-.glass-container {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border-radius: 24px;
-  padding: 40px;
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.1),
-    0 0 0 1px rgba(255, 255, 255, 0.2);
-  max-width: 900px;
-  margin: 0 auto;
-  animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  position: relative;
-  overflow: hidden;
-}
+.glass-container { background: rgba(255, 255, 255, 0.95);
+   backdrop-filter: blur(20px);
+    border-radius: 24px; padding: 40px;
+     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.2);
+      max-width: 900px; margin: 0 auto;
+       animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+       overflow: hidden; }
+
 
 .glass-container::before {
   content: '';
@@ -678,6 +673,102 @@ code {
 }
 
 /* ===========================
+   ISSUED DOCUMENTS SECTION - WIDER TABLE
+   =========================== */
+.issued-documents-section {
+  width: 100%;
+  margin-top: 24px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.issued-documents-section table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.issued-documents-section thead {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.issued-documents-section th {
+  padding: 16px 20px;
+  text-align: left;
+  font-weight: 600;
+  color: white;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.issued-documents-section th:nth-child(1) {
+  width: 35%;
+}
+
+.issued-documents-section th:nth-child(2) {
+  width: 35%;
+}
+
+.issued-documents-section th:nth-child(3) {
+  width: 15%;
+}
+
+.issued-documents-section th:nth-child(4) {
+  width: 15%;
+}
+
+.issued-documents-section td {
+  padding: 16px 20px;
+  border-bottom: 1px solid #e2e8f0;
+  font-size: 0.95rem;
+  color: #2d3748;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 0;
+}
+
+.issued-documents-section td:nth-child(1),
+.issued-documents-section td:nth-child(2) {
+  font-family: 'Courier New', monospace;
+  font-size: 0.85rem;
+}
+
+.issued-documents-section tbody tr {
+  transition: all 0.3s ease;
+}
+
+.issued-documents-section tbody tr:hover {
+  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+  transform: scale(1.01);
+}
+
+.issued-documents-section tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.issued-documents-section a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.issued-documents-section a:hover {
+  color: #764ba2;
+  transform: translateX(3px);
+}
+
+/* ===========================
    RESPONSIVE DESIGN
    =========================== */
 @media (max-width: 768px) {
@@ -702,6 +793,15 @@ code {
   .role-status {
     flex-direction: column;
     gap: 10px;
+  }
+
+  .issued-documents-section table {
+    font-size: 0.85rem;
+  }
+
+  .issued-documents-section th,
+  .issued-documents-section td {
+    padding: 12px 10px;
   }
 }
 
