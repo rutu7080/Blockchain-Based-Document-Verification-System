@@ -21,11 +21,20 @@ Start hardhat node(Keep Terminal On)
 ```shell
 npx hardhat node
 ```
+Start Daemon node(Keep Terminal On)
+```shell
+ipfs daemon
+```
 In another Terminal Deploy Contract(Keep Terminal On)
 ```shell
 npx hardhat clean
 npx hardhat compile
 npx hardhat run scripts/deploy.js --network localhost
+```
+In another Terminal start server(Keep Terminal On)
+```shell
+cd server
+node server.js
 ```
 In another Terminal Start frontend App
 ```shell
