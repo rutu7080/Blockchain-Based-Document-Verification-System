@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
+import QRCodeLib from "qrcode";
 import DocRegistry from "./artifacts/contracts/DocRegistry.sol/DocRegistry.json";
 import "./App.css";
 
@@ -14,6 +15,10 @@ function App() {
   const [issuedDocs, setIssuedDocs] = useState([]);
   const [loadingDocs, setLoadingDocs] = useState(false);
 
+  // QR Modal state
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [selectedDocCID, setSelectedDocCID] = useState("");
+  const [qrCodeURL, setQrCodeURL] = useState("");
 
   const [step, setStep] = useState("selectRole");
   const [role, setRole] = useState(null);
@@ -28,6 +33,33 @@ function App() {
   const [roleStatus, setRoleStatus] = useState(null);
 
   const provider = new ethers.JsonRpcProvider(localProviderUrl);
+
+  // Function to open QR modal
+  async function openQRModal(cid) {
+    setSelectedDocCID(cid);
+    const url = `https://ipfs.io/ipfs/${cid}`;
+    try {
+      const qrDataURL = await QRCodeLib.toDataURL(url, {
+        width: 200,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#ffffff'
+        }
+      });
+      setQrCodeURL(qrDataURL);
+      setShowQRModal(true);
+    } catch (err) {
+      console.error('Error generating QR code:', err);
+    }
+  }
+
+  // Function to close QR modal
+  function closeQRModal() {
+    setShowQRModal(false);
+    setSelectedDocCID("");
+    setQrCodeURL("");
+  }
 
   useEffect(() => {
     if (signer) {
@@ -577,13 +609,24 @@ function App() {
                           {doc.revoked ? "❌ Revoked" : "✅ Valid"}
                         </td>
                         <td>
-                          <a
-                            href={`https://ipfs.io/ipfs/${doc.cid}`}
-                            target="_blank"
-                            rel="noreferrer"
+                          <button
+                            onClick={() => openQRModal(doc.cid)}
+                            style={{
+                              padding: "8px 16px",
+                              backgroundColor: "#667eea",
+                              color: "white",
+                              border: "none",
+                              borderRadius: "8px",
+                              cursor: "pointer",
+                              fontWeight: "600",
+                              fontSize: "14px",
+                              transition: "all 0.3s ease"
+                            }}
+                            onMouseOver={(e) => e.target.style.backgroundColor = "#764ba2"}
+                            onMouseOut={(e) => e.target.style.backgroundColor = "#667eea"}
                           >
-                            🔗 Open
-                          </a>
+                             View
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -628,7 +671,65 @@ function App() {
                 </p>
               </div>
             </div>
-          )} 
+          )}
+
+          {/* QR Code Modal */}
+          {showQRModal && (
+            <div 
+              className="qr-modal-overlay"
+              onClick={closeQRModal}
+            >
+              <div 
+                className="qr-modal-content"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button 
+                  className="qr-modal-close"
+                  onClick={closeQRModal}
+                >
+                  ✕
+                </button>
+                
+                <h3 style={{ textAlign: "center", marginBottom: "20px", color: "#2d3748" }}>
+                   Document QR Code
+                </h3>
+                
+                <div style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
+                  {qrCodeURL && (
+                    <img 
+                      src={qrCodeURL} 
+                      alt="QR Code" 
+                      style={{ 
+                        border: "10px solid white",
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                        borderRadius: "8px"
+                      }} 
+                    />
+                  )}
+                </div>
+                
+                <p style={{ textAlign: "center", color: "#4a5568", marginBottom: "15px" }}>
+                  <strong>OR</strong>
+                </p>
+                
+                <p style={{ textAlign: "center" }}>
+                  <a 
+                    href={`https://ipfs.io/ipfs/${selectedDocCID}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      color: "#667eea",
+                      textDecoration: "none",
+                      fontWeight: "600",
+                      fontSize: "16px"
+                    }}
+                  >
+                    🔗 Click here to open
+                  </a>
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );

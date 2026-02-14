@@ -19,6 +19,6 @@
   "dependencies": {
     "cors": "^2.8.6",
     "multer": "^2.0.2",
-    "react-qr-code": "^2.0.18"
+    "qrcode": "^1.5.4"
   }
 }
