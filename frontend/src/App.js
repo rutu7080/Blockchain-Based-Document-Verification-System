@@ -20,6 +20,9 @@ function App() {
   const [selectedDocCID, setSelectedDocCID] = useState("");
   const [qrCodeURL, setQrCodeURL] = useState("");
 
+  // Navigation state
+  const [currentSection, setCurrentSection] = useState("home");
+
   const [step, setStep] = useState("selectRole");
   const [role, setRole] = useState(null);
   const [account, setAccount] = useState(null);
@@ -368,40 +371,316 @@ function App() {
   if (step === "selectRole") {
     return (
       <div className="App">
-        <div className="glass-container" style={{ textAlign: "center" }}>
-          <h1 className="role-selection-title">🔐 Blockchain Document Verification System</h1>
-          <p className="role-selection-subtitle" style={{ color: "#666", marginBottom: "30px", fontSize: "1.1rem" }}>
-            Secure, immutable document verification on the blockchain
-          </p>
-          
-          <h3 className="role-selection-header">Select your role:</h3>
-          <div className="role-cards-container" style={{ display: "flex", justifyContent: "center", gap: "20px", flexWrap: "wrap", marginTop: "30px" }}>
-            <button 
-              className="role-button hover-lift"
-              onClick={() => { setRole("issuer"); setStep("connect"); }} 
-              style={{ margin: "10px", padding: "20px 30px", fontSize: "16px", backgroundColor: "#4CAF50", color: "white", borderRadius: "12px", minWidth: "160px" }}>
-              <div className="role-button-icon" style={{ fontSize: "2rem", marginBottom: "8px" }}>📝</div>
-              <div style={{ fontWeight: "bold" }}>Issuer</div>
-              <div style={{ fontSize: "12px", marginTop: "5px", opacity: 0.9 }}>Issue & manage documents</div>
-            </button>
-            <button 
-              className="role-button hover-lift"
-              onClick={() => { setRole("user"); setStep("connect"); }} 
-              style={{ margin: "10px", padding: "20px 30px", fontSize: "16px", backgroundColor: "#2196F3", color: "white", borderRadius: "12px", minWidth: "160px" }}>
-              <div className="role-button-icon" style={{ fontSize: "2rem", marginBottom: "8px" }}>👤</div>
-              <div style={{ fontWeight: "bold" }}>User</div>
-              <div style={{ fontSize: "12px", marginTop: "5px", opacity: 0.9 }}>View document details</div>
-            </button>
-            <button 
-              className="role-button hover-lift"
-              onClick={() => { setRole("verifier"); setStep("connect"); }} 
-              style={{ margin: "10px", padding: "20px 30px", fontSize: "16px", backgroundColor: "#FF9800", color: "white", borderRadius: "12px", minWidth: "160px" }}>
-              <div className="role-button-icon" style={{ fontSize: "2rem", marginBottom: "8px" }}>🔍</div>
-              <div style={{ fontWeight: "bold" }}>Verifier</div>
-              <div style={{ fontSize: "12px", marginTop: "5px", opacity: 0.9 }}>Verify document authenticity</div>
-            </button>
+        {/* Navigation Bar */}
+        <nav className="navbar">
+          <div className="navbar-container">
+            <div className="navbar-logo">
+              🔐 DocVerify
+            </div>
+            <div className="navbar-menu">
+              <button 
+                className={`nav-item ${currentSection === 'home' ? 'active' : ''}`}
+                onClick={() => setCurrentSection('home')}
+              >
+                Home
+              </button>
+              <button 
+                className={`nav-item ${currentSection === 'technologies' ? 'active' : ''}`}
+                onClick={() => setCurrentSection('technologies')}
+              >
+                Technologies
+              </button>
+              <button 
+                className={`nav-item ${currentSection === 'projects' ? 'active' : ''}`}
+                onClick={() => setCurrentSection('projects')}
+              >
+                Projects
+              </button>
+              <button 
+                className={`nav-item ${currentSection === 'about' ? 'active' : ''}`}
+                onClick={() => setCurrentSection('about')}
+              >
+                About Us
+              </button>
+            </div>
           </div>
-        </div>
+        </nav>
+
+        {/* Home Section - Role Selection */}
+        {currentSection === 'home' && (
+          <div className="home-section">
+            <div className="hero-content">
+              <h1 className="hero-title">🔐 Blockchain Document Verification System</h1>
+              <p className="hero-subtitle">
+                Secure, immutable document verification on the blockchain
+              </p>
+            </div>
+            
+            <div className="role-selection-container">
+              <h3 className="role-selection-header">Select your role:</h3>
+              <div className="role-cards-grid">
+                <button 
+                  className="role-card role-issuer hover-lift"
+                  onClick={() => { setRole("issuer"); setStep("connect"); }}>
+                  <div className="role-card-icon">📝</div>
+                  <div className="role-card-title">Issuer</div>
+                  <div className="role-card-description">Issue & manage documents</div>
+                </button>
+                
+                <button 
+                  className="role-card role-user hover-lift"
+                  onClick={() => { setRole("user"); setStep("connect"); }}>
+                  <div className="role-card-icon">👤</div>
+                  <div className="role-card-title">User</div>
+                  <div className="role-card-description">View document details</div>
+                </button>
+                
+                <button 
+                  className="role-card role-verifier hover-lift"
+                  onClick={() => { setRole("verifier"); setStep("connect"); }}>
+                  <div className="role-card-icon">🔍</div>
+                  <div className="role-card-title">Verifier</div>
+                  <div className="role-card-description">Verify document authenticity</div>
+                </button>
+              </div>
+            </div>
+
+            <div className="features-preview">
+              <div className="feature-item">
+                <span className="feature-icon">⛓️</span>
+                <span>Blockchain Secured</span>
+              </div>
+              <div className="feature-item">
+                <span className="feature-icon">🔒</span>
+                <span>Immutable Records</span>
+              </div>
+              <div className="feature-item">
+                <span className="feature-icon">⚡</span>
+                <span>Instant Verification</span>
+              </div>
+              <div className="feature-item">
+                <span className="feature-icon">📱</span>
+                <span>QR Code Support</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Technologies Section */}
+        {currentSection === 'technologies' && (
+          <div className="glass-container">
+            <h1 style={{ textAlign: "center", marginBottom: "40px" }}>🚀 Technologies</h1>
+            <div className="tech-grid">
+              <div className="tech-card">
+                <div className="tech-icon">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Ethereum_logo_2014.svg" alt="Ethereum" style={{ width: "60px", height: "60px" }} />
+                </div>
+                <h3>Blockchain</h3>
+                <p>Ethereum blockchain for immutable and transparent document storage</p>
+              </div>
+              <div className="tech-card">
+                <div className="tech-icon">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/1/18/Ipfs-logo-1024-ice-text.png" alt="IPFS" style={{ width: "60px", height: "60px" }} />
+                </div>
+                <h3>IPFS</h3>
+                <p>Decentralized file storage using InterPlanetary File System</p>
+              </div>
+              <div className="tech-card">
+                <div className="tech-icon">⚛️</div>
+                <h3>React</h3>
+                <p>Modern frontend framework for building interactive user interfaces</p>
+              </div>
+              <div className="tech-card">
+                <div className="tech-icon">🔒</div>
+                <h3>Smart Contracts</h3>
+                <p>Solidity-based smart contracts with role-based access control</p>
+              </div>
+              <div className="tech-card">
+                <div className="tech-icon">🦊</div>
+                <h3>MetaMask</h3>
+                <p>Web3 wallet integration for secure blockchain interactions</p>
+              </div>
+              <div className="tech-card">
+                <div className="tech-icon">🔐</div>
+                <h3>Cryptography</h3>
+                <p>SHA-256 hashing for document integrity verification</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Projects Section */}
+        {currentSection === 'projects' && (
+          <div className="glass-container">
+            <h1 style={{ textAlign: "center", marginBottom: "40px" }}>💼 Projects</h1>
+            <div className="projects-container">
+              <div className="project-card">
+                <div className="project-header">
+                  <h3>⛓️ Blockchain Demo</h3>
+                  <span className="project-badge">Live</span>
+                </div>
+                <p>
+                  An interactive blockchain visualization tool that demonstrates how blockchain technology works. 
+                  This educational project helps users understand core blockchain concepts including blocks, hashing, 
+                  mining, and distributed ledger technology through hands-on interaction.
+                </p>
+                <div className="project-features">
+                  <div className="feature-tag">🔗 Block Creation</div>
+                  <div className="feature-tag">🔐 SHA-256 Hashing</div>
+                  <div className="feature-tag">⛏️ Mining Simulation</div>
+                  <div className="feature-tag">📊 Chain Validation</div>
+                </div>
+                <div className="project-links">
+                  <a 
+                    href="https://blockchain-demo-k4ex.onrender.com/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="project-link live-link"
+                  >
+                    🌐 View Live Demo
+                  </a>
+                  <a 
+                    href="https://github.com/rutu7080/Blockchain-Demo" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="project-link github-link"
+                  >
+                    💻 View on GitHub
+                  </a>
+                </div>
+              </div>
+
+              <div className="project-card">
+                <div className="project-header">
+                  <h3>🔑 Public-Private Key Demo</h3>
+                  <span className="project-badge">Live</span>
+                </div>
+                <p>
+                  An interactive cryptography demonstration tool that visualizes how public-private key encryption works. 
+                  This educational project helps users understand asymmetric encryption, digital signatures, 
+                  and secure communication through practical examples and real-time visualization.
+                </p>
+                <div className="project-features">
+                  <div className="feature-tag">🔐 Key Generation</div>
+                  <div className="feature-tag">📝 Digital Signatures</div>
+                  <div className="feature-tag">🔒 Encryption/Decryption</div>
+                  <div className="feature-tag">✅ Signature Verification</div>
+                </div>
+                <div className="project-links">
+                  <a 
+                    href="https://public-private-key-demo-42gw.onrender.com" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="project-link live-link"
+                  >
+                    🌐 View Live Demo
+                  </a>
+                  <a 
+                    href="https://github.com/rutu7080/public-private-key-Demo" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="project-link github-link"
+                  >
+                    💻 View on GitHub
+                  </a>
+                </div>
+              </div>
+
+              <div className="project-card">
+                <div className="project-header">
+                  <h3>📦 IPFS File System</h3>
+                  <span className="project-badge in-development">In Development</span>
+                </div>
+                <p>
+                  A decentralized file storage system built on IPFS (InterPlanetary File System). 
+                  This project demonstrates how to upload, store, and retrieve files in a distributed manner 
+                  without relying on centralized servers, ensuring data permanence and availability.
+                </p>
+                <div className="project-features">
+                  <div className="feature-tag">📤 File Upload</div>
+                  <div className="feature-tag">🌐 IPFS Integration</div>
+                  <div className="feature-tag">🔗 Content Addressing</div>
+                  <div className="feature-tag">💾 Decentralized Storage</div>
+                </div>
+                <div className="project-links">
+                  <a 
+                    href="https://github.com/rutu7080/IPFS-File-System" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="project-link github-link github-only"
+                  >
+                    💻 View on GitHub
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* About Us Section */}
+        {currentSection === 'about' && (
+          <div className="glass-container">
+            <h1 style={{ textAlign: "center", marginBottom: "40px" }}>👥 About Us</h1>
+            <div className="about-content">
+              <div className="about-section">
+                <h3>🎯 Our Mission</h3>
+                <p>
+                  To revolutionize document verification by leveraging blockchain technology, 
+                  ensuring transparency, security, and immutability for critical documents worldwide.
+                </p>
+              </div>
+
+              <div className="about-section">
+                <h3>💡 Our Vision</h3>
+                <p>
+                  A world where document fraud is eliminated, and verification is instant, 
+                  secure, and accessible to everyone through decentralized technology.
+                </p>
+              </div>
+
+              <div className="about-section">
+                <h3>⚡ What We Do</h3>
+                <p>
+                  We provide a blockchain-based platform that allows organizations to issue 
+                  verifiable documents and enables anyone to instantly verify document authenticity 
+                  without relying on centralized authorities.
+                </p>
+              </div>
+
+              <div className="about-section">
+                <h3>🌟 Key Features</h3>
+                <ul className="features-list">
+                  <li>✅ Immutable document records on Ethereum blockchain</li>
+                  <li>✅ Decentralized storage using IPFS</li>
+                  <li>✅ Role-based access control for issuers and verifiers</li>
+                  <li>✅ QR code generation for easy verification</li>
+                  <li>✅ Instant document status checking (Valid/Revoked)</li>
+                  <li>✅ Cryptographic proof of authenticity</li>
+                </ul>
+              </div>
+
+              <div className="about-section">
+                <h3>📧 Contact Us</h3>
+                <div className="contact-info">
+                  <p>
+                    <span className="contact-icon">📧</span>
+                    <strong>Email:</strong>{" "}
+                    <a href="mailto:ruturajdeshmukh23@gmail.com" className="contact-link">
+                      ruturajdeshmukh23@gmail.com
+                    </a>
+                  </p>
+                  <p>
+                    <span className="contact-icon">💻</span>
+                    <strong>GitHub:</strong>{" "}
+                    <a href="https://github.com/rutu7080" target="_blank" rel="noopener noreferrer" className="contact-link">
+                      github.com/rutu7080
+                    </a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -625,7 +904,7 @@ function App() {
                             onMouseOver={(e) => e.target.style.backgroundColor = "#764ba2"}
                             onMouseOut={(e) => e.target.style.backgroundColor = "#667eea"}
                           >
-                             View
+                            👁️ View
                           </button>
                         </td>
                       </tr>
@@ -691,7 +970,7 @@ function App() {
                 </button>
                 
                 <h3 style={{ textAlign: "center", marginBottom: "20px", color: "#2d3748" }}>
-                   Document QR Code
+                  📱 Document QR Code
                 </h3>
                 
                 <div style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
