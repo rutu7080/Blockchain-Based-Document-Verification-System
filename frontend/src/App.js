@@ -904,7 +904,7 @@ function App() {
                             onMouseOver={(e) => e.target.style.backgroundColor = "#764ba2"}
                             onMouseOut={(e) => e.target.style.backgroundColor = "#667eea"}
                           >
-                            👁️ View
+                            View
                           </button>
                         </td>
                       </tr>
