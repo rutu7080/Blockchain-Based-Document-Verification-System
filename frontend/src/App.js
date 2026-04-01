@@ -372,7 +372,7 @@ function App() {
 
         {currentSection === 'technologies' && (
           <div className="glass-container">
-            <h1 style={{ textAlign: "center", marginBottom: "10px" }}>🚀 Technologies</h1>
+            <h1 style={{ textAlign: "center", marginBottom: "10px" }}> Technologies</h1>
             <p style={{ textAlign: "center", color: "rgba(255,255,255,0.45)", marginBottom: "8px", fontSize: "0.95rem" }}>Powered by cutting-edge decentralized tech</p>
             <div className="tech-grid">
               <div className="tech-card">
@@ -395,7 +395,7 @@ function App() {
 
         {currentSection === 'projects' && (
           <div className="glass-container">
-            <h1 style={{ textAlign: "center", marginBottom: "10px" }}>💼 Projects</h1>
+            <h1 style={{ textAlign: "center", marginBottom: "10px" }}> Projects</h1>
             <p style={{ textAlign: "center", color: "rgba(255,255,255,0.45)", marginBottom: "8px", fontSize: "0.95rem" }}>Open-source blockchain tools &amp; demos</p>
             <div className="projects-container">
               <div className="project-card">
@@ -445,7 +445,7 @@ function App() {
 
         {currentSection === 'about' && (
           <div className="glass-container">
-            <h1 style={{ textAlign: "center", marginBottom: "10px" }}>👥 About Us</h1>
+            <h1 style={{ textAlign: "center", marginBottom: "10px" }}> About Us</h1>
             <p style={{ textAlign: "center", color: "rgba(255,255,255,0.45)", marginBottom: "8px", fontSize: "0.95rem" }}>Building the future of document trust</p>
             <div className="about-content">
               <div className="about-section"><h3>🎯 Our Mission</h3><p>To revolutionize document verification by leveraging blockchain technology, ensuring transparency, security, and immutability for critical documents worldwide.</p></div>
