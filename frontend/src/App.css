@@ -191,7 +191,7 @@ body::after {
 
 /* ─── ROLE SELECTION ─── */
 .role-selection-container { margin-bottom: 60px; }
-.role-selection-header { text-align: center; font-size: 0.85rem; color: rgba(255,255,255,0.4); margin-bottom: 36px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; }
+.role-selection-header { text-align: center; font-size: 0.85rem; color: rgba(255,255,255,0.9); margin-bottom: 36px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; font-size: 1.1rem; text-shadow: 0 0 20px rgba(167,139,250,0.5); }
 .role-cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 28px; max-width: 900px; margin: 0 auto; }
 
 /* ─── ANIMATED GRADIENT BORDER ROLE CARDS ─── */

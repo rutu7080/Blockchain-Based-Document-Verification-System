@@ -325,7 +325,7 @@ function App() {
       <div className="App">
         <nav className="navbar">
           <div className="navbar-container">
-            <div className="navbar-logo">🔐 DocVerify</div>
+            <div className="navbar-logo">🔰 DocVerify</div>
             <div className="navbar-menu">
               <button className={`nav-item ${currentSection === 'home' ? 'active' : ''}`} onClick={() => setCurrentSection('home')}>Home</button>
               <button className={`nav-item ${currentSection === 'technologies' ? 'active' : ''}`} onClick={() => setCurrentSection('technologies')}>Technologies</button>
@@ -345,12 +345,12 @@ function App() {
               <h3 className="role-selection-header">Select your role:</h3>
               <div className="role-cards-grid">
                 <button className="role-card role-issuer hover-lift" onClick={() => { setRole("issuer"); setStep("connect"); }}>
-                  <div className="role-card-icon">📝</div>
+                  <div className="role-card-icon">🏛️</div>
                   <div className="role-card-title">Issuer</div>
                   <div className="role-card-description">Issue &amp; manage documents</div>
                 </button>
                 <button className="role-card role-user hover-lift" onClick={() => { setRole("user"); setStep("connect"); }}>
-                  <div className="role-card-icon">👤</div>
+                  <div className="role-card-icon">👩🏽‍🎓</div>
                   <div className="role-card-title">User</div>
                   <div className="role-card-description">View document details</div>
                 </button>
@@ -361,12 +361,7 @@ function App() {
                 </button>
               </div>
             </div>
-            <div className="features-preview">
-              <div className="feature-item"><span className="feature-icon">⛓️</span><span>Blockchain Secured</span></div>
-              <div className="feature-item"><span className="feature-icon">🔒</span><span>Immutable Records</span></div>
-              <div className="feature-item"><span className="feature-icon">⚡</span><span>Instant Verification</span></div>
-              <div className="feature-item"><span className="feature-icon">📱</span><span>QR Code Support</span></div>
-            </div>
+            
           </div>
         )}
 
@@ -386,7 +381,7 @@ function App() {
                 <p>Decentralized file storage using InterPlanetary File System</p>
               </div>
               <div className="tech-card"><div className="tech-icon">⚛️</div><h3>React</h3><p>Modern frontend framework for building interactive user interfaces</p></div>
-              <div className="tech-card"><div className="tech-icon">🔒</div><h3>Smart Contracts</h3><p>Solidity-based smart contracts with role-based access control</p></div>
+              <div className="tech-card"><div className="tech-icon">📜</div><h3>Smart Contracts</h3><p>Solidity-based smart contracts with role-based access control</p></div>
               <div className="tech-card"><div className="tech-icon">🦊</div><h3>MetaMask</h3><p>Web3 wallet integration for secure blockchain interactions</p></div>
               <div className="tech-card"><div className="tech-icon">🔐</div><h3>Cryptography</h3><p>SHA-256 hashing for document integrity verification</p></div>
             </div>
